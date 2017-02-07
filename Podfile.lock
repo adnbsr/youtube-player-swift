@@ -1,0 +1,47 @@
+PODS:
+  - Alamofire (4.2.0)
+  - AlamofireImage (3.2.0):
+    - Alamofire (~> 4.1)
+  - Box (2.0)
+  - FileBrowser (0.2.0)
+  - Graph (2.1.0)
+  - Material (2.4.8):
+    - Material/Core (= 2.4.8)
+  - Material/Core (2.4.8)
+  - Result (3.1.0)
+  - SDWebImage (3.8.2):
+    - SDWebImage/Core (= 3.8.2)
+  - SDWebImage/Core (3.8.2)
+  - SnapKit (3.0.2)
+  - SwiftyJSON (3.1.3)
+  - XCDYouTubeKit (2.5.3)
+
+DEPENDENCIES:
+  - Alamofire (~> 4.0)
+  - AlamofireImage (~> 3.1)
+  - Box (~> 2.0)
+  - FileBrowser (~> 0.2)
+  - Graph (~> 2.0)
+  - Material (~> 2.0)
+  - Result (~> 3.1.0)
+  - SDWebImage (~> 3.8)
+  - SnapKit (~> 3.0.2)
+  - SwiftyJSON
+  - XCDYouTubeKit (~> 2.5)
+
+SPEC CHECKSUMS:
+  Alamofire: aa2e09d871c9160ac53c90e83c68064a94e3dfbe
+  AlamofireImage: 157ed682cc81d3b9db4fb90c1f12180ac552d93b
+  Box: 70713ca3679e4e11ad4c470e9b58265f506fc659
+  FileBrowser: af8abc035daca66a6066351ae162c4af4c6b24dd
+  Graph: 2d1b00516566c8a1d3d304b852288c7e68a13c01
+  Material: b5d946bf46c51bc83b726602cb04b7793b8256fe
+  Result: 4e3ed5995ed94d0cd6a09be9a431fce3f3624bbf
+  SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
+  SnapKit: 2e456761aa92d4d4067a7a5594c18769d451a8ad
+  SwiftyJSON: 38a8ea2006779c0fc4c310cb2ee8195327740faf
+  XCDYouTubeKit: 90690f9e3523735dc93b8024269d991b0cfffe78
+
+PODFILE CHECKSUM: 370ed88f6ebd67d2e7b01683faf560cc78b4699d
+
+COCOAPODS: 1.1.1

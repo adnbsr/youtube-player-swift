@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import AVFoundation
+import AudioToolbox
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +18,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+   
+        do {
+            try AVAudioSession.sharedInstance().setActive(true)
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+        }catch (let error as NSError) {
+            dump(error)
+        }
+        
+        let bottomNavigationController = AppBottomNavigationController(viewControllers:
+            [ AppSnackbarController(rootViewController:SearchController(rootViewController: SearchRootController())),
+              FavoritesController(rootViewController: FavoritesRootController()),
+              PlayerController.sharedInstance,
+              ListController(),
+              SettingsController(rootViewController: SettingsRootController())
+            ])
+        bottomNavigationController.selectedIndex = 0
+    
+        
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        self.window?.rootViewController = bottomNavigationController
+        self.window?.makeKeyAndVisible()
+        
+
+        
         return true
     }
 
@@ -27,6 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        dump("applicationDidEnterBackground!")
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
