@@ -15,6 +15,8 @@ target 'PlayTube' do
   pod 'SDWebImage', '~>3.8'
   pod 'Box', '~> 2.0'
   pod 'Result', '~> 3.1.0'
-  pod "XCDYouTubeKit", "~> 2.5"
+  pod "XCDYouTubeKit", "~> 2.5.4"
   pod 'FileBrowser', '~> 0.2'
+  pod 'Fabric'
+  pod 'Crashlytics', '~> 3.8'
 end

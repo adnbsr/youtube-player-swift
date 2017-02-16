@@ -89,6 +89,7 @@ func formatFromDuration(duration: String) -> String {
     return formattedTime
 }
 
+@objc
 public class VideoResource: NSObject, JSONMappable {
 
     public let id: String

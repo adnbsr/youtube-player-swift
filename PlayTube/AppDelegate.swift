@@ -9,6 +9,9 @@
 import UIKit
 import AVFoundation
 import AudioToolbox
+import Fabric
+import Crashlytics
+import Material
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,6 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
    
+        Fabric.with([Crashlytics.self])
+        
         do {
             try AVAudioSession.sharedInstance().setActive(true)
             try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
@@ -26,11 +31,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             dump(error)
         }
         
+        
         let bottomNavigationController = AppBottomNavigationController(viewControllers:
             [ AppSnackbarController(rootViewController:SearchController(rootViewController: SearchRootController())),
               FavoritesController(rootViewController: FavoritesRootController()),
-              PlayerController.sharedInstance,
-              ListController(),
+              PlayerController(rootViewController: PlayerRootController.sharedInstance),
+              //ListController()
               SettingsController(rootViewController: SettingsRootController())
             ])
         bottomNavigationController.selectedIndex = 0
@@ -40,11 +46,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window?.rootViewController = bottomNavigationController
         self.window?.makeKeyAndVisible()
         
-
+        
         
         return true
     }
 
+    
+    private func setupFirebase(){
+        
+    }
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.

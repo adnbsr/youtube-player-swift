@@ -1,25 +1,35 @@
 //
-//  FavoriteCell.swift
+//  PlayerQueueItem.swift
 //  PlayTube
 //
-//  Created by Adnan Basar on 19/01/2017.
+//  Created by Adnan Basar on 13/02/2017.
 //  Copyright © 2017 Adnan Basar. All rights reserved.
 //
 
 import Foundation
-import Graph
+import UIKit
 import Material
+import AlamofireImage
+import Alamofire
 
-class FavoriteCell: TableViewCell {
 
+class PlayerQueueCell: TableViewCell {
+    
     var constraintsUpdated = false
     
     var thumbnailView: UIImageView!
+    var textContainer: UIView!
     var titleLabel: UILabel!
     var channelLabel: UILabel!
     var publishedLabel: UILabel!
     var durationLabel: UILabel!
-    var favoriteButton: IconButton!
+    var moreButton: IconButton!
+    
+    var resource: VideoResource? {
+        didSet{
+            layoutSubviews()
+        }
+    }
     
     override var height: CGFloat{
         
@@ -30,54 +40,31 @@ class FavoriteCell: TableViewCell {
             super.height = value
         }
     }
-
-    var data: Entity? {
-        didSet{
-            layoutSubviews()
-        }
+    
+    
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        guard let d = self.data  else {
-            return
-        }
-                
-        self.thumbnailView.sd_setImage(with: d[Keys.thumbnailURL] as? URL)
-        self.titleLabel.text = d[Keys.title] as? String
-        self.channelLabel.text = d[Keys.channelTitle] as? String
-        self.publishedLabel.text = d[Keys.publishedDate] as? String
-        self.durationLabel.text = d[Keys.duration] as? String
-        
-        self.favoriteButton.addTarget(self, action: #selector(self.removeFromFavorite), for: .touchUpInside)
-    
-        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.playVideo)))
-    
-    }
-    
-    @objc
-    func removeFromFavorite(){
-        
-        guard let d = self.data else {
+        guard let r = resource else {
             return
         }
         
-        d.delete()
+        self.thumbnailView.sd_setImage(with: r.thumbnailURL)
+        self.titleLabel.text = r.title
+        self.channelLabel.text = r.channelTitle
+        self.publishedLabel.text = r.uploadedDate
+        self.durationLabel.text = r.duration
         
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reload"), object: nil)
     }
-    
-    @objc
-    func playVideo(){
-        
-        guard let r = self.data?.convertToVideoResource() else {
-            return
-        }
-        
-        PlayerRootController.sharedInstance.playerQueueState.now = r
-    }
-    
     
     override func prepare() {
         super.prepare()
@@ -91,6 +78,7 @@ class FavoriteCell: TableViewCell {
         contentView.height = self.height
         
         prepareThumbnailView()
+        prepareTextContainer()
         prepareTitleLabel()
         prepareChannelLabel()
         preparePublishedLabel()
@@ -107,27 +95,34 @@ class FavoriteCell: TableViewCell {
         )
     }
     
+    private func prepareTextContainer(){
+        self.textContainer = UIView()
+        self.textContainer.clipsToBounds = true
+    }
+    
     private func prepareTitleLabel(){
         self.titleLabel = UILabel()
-        self.titleLabel.font = RobotoFont.medium(with: 13.0)
+        self.titleLabel.frame = self.textContainer.bounds
+        self.titleLabel.font = RobotoFont.medium(with: 12.0)
         self.titleLabel.textColor = Color.black
+        self.titleLabel.sizeToFit()
     }
     
     private func prepareChannelLabel(){
         self.channelLabel = UILabel()
-        self.channelLabel.font = RobotoFont.regular(with: 11.0)
+        self.channelLabel.font = RobotoFont.regular(with: 10.0)
         self.channelLabel.textColor = Color.blueGrey.base
     }
     
     private func preparePublishedLabel(){
         self.publishedLabel = UILabel()
-        self.publishedLabel.font = RobotoFont.regular(with: 11.0)
+        self.publishedLabel.font = RobotoFont.regular(with: 10.0)
         self.publishedLabel.textColor = Color.cyan
     }
     
     private func prepareDurationLabel(){
         self.durationLabel = UILabel()
-        self.durationLabel.font = RobotoFont.light(with: 11.0)
+        self.durationLabel.font = RobotoFont.light(with: 10.0)
         self.durationLabel.textColor = Color.white
         
         self.durationLabel.borderWidth = 1.0
@@ -137,16 +132,19 @@ class FavoriteCell: TableViewCell {
     }
     
     private func prepareRightButtons(){
-        self.favoriteButton = IconButton(image: Icon.favorite, tintColor: Color.red.base)
+        self.moreButton = IconButton(image: Icon.cm.moreVertical, tintColor: Color.blueGrey.base)
     }
     
     private func addSubviews(){
         
         self.contentView.addSubview(self.thumbnailView)
-        self.contentView.addSubview(self.titleLabel)
-        self.contentView.addSubview(self.channelLabel)
-        self.contentView.addSubview(self.publishedLabel)
-        self.contentView.addSubview(self.favoriteButton)
+        
+        self.textContainer.addSubview(self.titleLabel)
+        self.textContainer.addSubview(self.channelLabel)
+        self.textContainer.addSubview(self.publishedLabel)
+        
+        self.contentView.addSubview(self.textContainer)
+        self.contentView.addSubview(self.moreButton)
         self.contentView.addSubview(self.durationLabel)
     }
     
@@ -155,9 +153,30 @@ class FavoriteCell: TableViewCell {
         if !constraintsUpdated {
             constraintsUpdated = true
             
+            self.moreButton.snp.makeConstraints({(make) -> Void in
+                make.centerY.equalToSuperview()
+                make.trailing.equalToSuperview().inset(16)
+            })
+
+            
+            self.durationLabel.snp.makeConstraints({(make) -> Void in
+                make.bottom.equalTo(self.thumbnailView).inset(8)
+                make.right.equalTo(self.thumbnailView).inset(8)
+            })
+            
+            
+            self.textContainer.snp.makeConstraints({(make) -> Void in
+                make.height.equalToSuperview()
+                make.left.equalTo(self.thumbnailView.snp.right).offset(8)
+                make.right.equalTo(self.moreButton.snp.left)
+            })
             
             self.titleLabel.snp.makeConstraints({(make) -> Void in
-                make.left.equalTo(self.thumbnailView.snp.right).offset(8)
+                //make.left.equalTo(self.thumbnailView.snp.right).offset(8)
+                //make.right.equalTo(self.favoriteButton.snp.left).inset(8)
+                //make.trailing.lessThanOrEqualTo(self.favoriteButton.snp.leading)
+                //make.right.lessThanOrEqualTo(self.favoriteButton.snp.left)
+                make.left.equalToSuperview()
                 make.topMargin.equalTo(8)
             })
             
@@ -171,21 +190,8 @@ class FavoriteCell: TableViewCell {
                 make.top.equalTo(self.channelLabel.snp.bottom).offset(4)
             })
             
-            self.durationLabel.snp.makeConstraints({(make) -> Void in
-                make.bottom.equalTo(self.thumbnailView).inset(8)
-                make.right.equalTo(self.thumbnailView).inset(8)
-            })
-            
-            self.favoriteButton.snp.makeConstraints({(make) -> Void in
-                make.centerY.equalToSuperview()
-                make.right.equalToSuperview().inset(8)
-            })
         }
         super.updateConstraintsIfNeeded()
         
     }
-
-    
-    
-
 }

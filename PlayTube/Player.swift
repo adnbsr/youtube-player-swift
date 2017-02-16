@@ -293,9 +293,9 @@ open class Player: UIViewController {
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        if self.playbackState == .playing {
-            self.pause()
-        }
+//        if self.playbackState == .playing {
+//            self.pause()
+//        }
     }
 }
 

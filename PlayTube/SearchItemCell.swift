@@ -13,11 +13,12 @@ import AlamofireImage
 import Alamofire
 
 
-class ItemCell: TableViewCell {
+class SearchItemCell: TableViewCell {
     
     var constraintsUpdated = false
  
     var thumbnailView: UIImageView!
+    var textContainer: UIView!
     var titleLabel: UILabel!
     var channelLabel: UILabel!
     var publishedLabel: UILabel!
@@ -78,6 +79,7 @@ class ItemCell: TableViewCell {
         contentView.height = self.height
     
         prepareThumbnailView()
+        prepareTextContainer()
         prepareTitleLabel()
         prepareChannelLabel()
         preparePublishedLabel()
@@ -94,12 +96,17 @@ class ItemCell: TableViewCell {
         )
     }
     
+    private func prepareTextContainer(){
+        self.textContainer = UIView()
+        self.textContainer.clipsToBounds = true
+    }
+    
     private func prepareTitleLabel(){
         self.titleLabel = UILabel()
+        self.titleLabel.frame = self.textContainer.bounds
         self.titleLabel.font = RobotoFont.medium(with: 12.0)
         self.titleLabel.textColor = Color.black
-        self.titleLabel.adjustsFontSizeToFitWidth = false
-        self.titleLabel.lineBreakMode = .byTruncatingTail
+        self.titleLabel.sizeToFit()
     }
     
     private func prepareChannelLabel(){
@@ -133,9 +140,12 @@ class ItemCell: TableViewCell {
     private func addSubviews(){
         
         self.contentView.addSubview(self.thumbnailView)
-        self.contentView.addSubview(self.titleLabel)
-        self.contentView.addSubview(self.channelLabel)
-        self.contentView.addSubview(self.publishedLabel)
+        
+        self.textContainer.addSubview(self.titleLabel)
+        self.textContainer.addSubview(self.channelLabel)
+        self.textContainer.addSubview(self.publishedLabel)
+        
+        self.contentView.addSubview(self.textContainer)
         self.contentView.addSubview(self.favoriteButton)
         self.contentView.addSubview(self.moreButton)
         self.contentView.addSubview(self.durationLabel)
@@ -162,11 +172,19 @@ class ItemCell: TableViewCell {
                 make.right.equalTo(self.thumbnailView).inset(8)
             })
             
-            self.titleLabel.snp.makeConstraints({(make) -> Void in
+            
+            self.textContainer.snp.makeConstraints({(make) -> Void in
+                make.height.equalToSuperview()
                 make.left.equalTo(self.thumbnailView.snp.right).offset(8)
+                make.right.equalTo(self.favoriteButton.snp.left)
+            })
+            
+            self.titleLabel.snp.makeConstraints({(make) -> Void in
+                //make.left.equalTo(self.thumbnailView.snp.right).offset(8)
                 //make.right.equalTo(self.favoriteButton.snp.left).inset(8)
                 //make.trailing.lessThanOrEqualTo(self.favoriteButton.snp.leading)
                 //make.right.lessThanOrEqualTo(self.favoriteButton.snp.left)
+                make.left.equalToSuperview()
                 make.topMargin.equalTo(8)
             })
             
@@ -184,6 +202,9 @@ class ItemCell: TableViewCell {
         super.updateConstraintsIfNeeded()
 
     }
+}
 
+extension SearchItemCell {
     
 }
+

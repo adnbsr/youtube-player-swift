@@ -16,6 +16,10 @@ class AppBottomNavigationController: BottomNavigationController{
         super.prepare()
         prepareNavigationBar()
     }
+    
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        dump("select")
+    }
 }
 
 extension AppBottomNavigationController{
